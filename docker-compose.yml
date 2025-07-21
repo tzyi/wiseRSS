@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: wiserss
+      POSTGRES_USER: wiserss
+      POSTGRES_PASSWORD: wiserss_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # Flask Backend
+  backend:
+    build: ./backend
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://wiserss:wiserss_password@db:5432/wiserss
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-production-secret-key
+      - JWT_SECRET_KEY=your-production-jwt-secret-key
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  # Celery Worker for RSS Updates
+  celery:
+    build: ./backend
+    command: celery -A app.celery worker --loglevel=info
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://wiserss:wiserss_password@db:5432/wiserss
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-production-secret-key
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # Celery Beat for Scheduled Tasks
+  celery-beat:
+    build: ./backend
+    command: celery -A app.celery beat --loglevel=info
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://wiserss:wiserss_password@db:5432/wiserss
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-production-secret-key
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
