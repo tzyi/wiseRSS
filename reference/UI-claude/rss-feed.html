@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS Reader - Feed管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1d21;
+            color: #e4e6eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .sidebar {
+            background-color: #0f1114;
+            border-right: 1px solid #2d3139;
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: #1a1d21;
+        }
+        .nav-item.active {
+            background-color: #1a1d21;
+            border-left: 3px solid #3b82f6;
+        }
+        .feed-card {
+            background-color: #242830;
+            border: 1px solid #2d3139;
+            transition: all 0.3s ease;
+        }
+        .feed-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .add-feed-card {
+            background-color: transparent;
+            border: 2px dashed #3b82f6;
+            transition: all 0.3s ease;
+        }
+        .add-feed-card:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-style: solid;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+        }
+        .input-field {
+            background-color: #1a1d21;
+            border: 1px solid #2d3139;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="h-screen flex">
+    <!-- 側邊欄 -->
+    <div class="sidebar w-64 h-full flex flex-col">
+        <!-- Logo區域 -->
+        <div class="p-6 border-b border-gray-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-rss text-white"></i>
+                </div>
+                <span class="text-xl font-bold text-white">RSS Reader</span>
+            </div>
+        </div>
+
+        <!-- 導航選單 -->
+        <nav class="flex-1 p-4">
+            <!-- 上半部導航 -->
+            <div class="space-y-2">
+                <a href="home.html" class="nav-item flex items-center px-4 py-3 rounded-lg text-gray-300 hover:text-white">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    <span>首頁</span>
+                </a>
+                <a href="feed.html" class="nav-item active flex items-center px-4 py-3 rounded-lg text-gray-300">
+                    <i class="fas fa-rss w-5 mr-3"></i>
+                    <span>Feed</span>
+                </a>
+            </div>
+
+            <!-- 下半部功能 -->
+            <div class="mt-auto pt-4 border-t border-gray-800">
+                <button onclick="openSearchModal()" class="nav-item w-full flex items-center px-4 py-3 rounded-lg text-gray-300 hover:text-white">
+                    <i class="fas fa-search w-5 mr-3"></i>
+                    <span>搜尋</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- 用戶資訊 -->
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-700 rounded-full"></div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-white">user@example.com</p>
+                    <p class="text-xs text-gray-400">免費方案</p>
+                </div>
+                <button class="text-gray-400 hover:text-white">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主內容區 -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- 頂部標題欄 -->
+        <div class="sticky top-0 bg-gray-800 border-b border-gray-700 px-8 py-4 z-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">管理 Feed</h1>
+                    <p class="text-sm text-gray-400 mt-1">新增和管理您的 RSS 訂閱來源</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-gray-700 px-4 py-2 rounded-lg">
+                        <span class="text-sm text-gray-400">訂閱數：</span>
+                        <span class="text-white font-semibold">12</span>
+                    </div>
+                    <button onclick="openAddFeedModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center transition-colors">
+                        <i class="fas fa-plus mr-2"></i>
+                        新增 Feed
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed 列表 -->
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 新增 Feed 卡片 -->
+                <div onclick="openAddFeedModal()" class="add-feed-card rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer h-48">
+                    <i class="fas fa-plus-circle text-4xl text-blue-500 mb-3"></i>
+                    <p class="text-blue-400 font-medium">新增 RSS Feed</p>
+                </div>
+
+                <!-- Feed 卡片 1 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-newspaper text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">TechCrunch</h3>
+                                <p class="text-xs text-gray-400">techcrunch.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu1')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu1" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            最新科技新聞、創業資訊和產品評測
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 245 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 2小時前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 2 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-code text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Dev.to</h3>
+                                <p class="text-xs text-gray-400">dev.to</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu2')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu2" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            開發者社群文章與程式設計教學
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 532 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 1小時前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 3 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-brain text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Hacker News</h3>
+                                <p class="text-xs text-gray-400">news.ycombinator.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu3')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu3" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            科技創業社群熱門討論與連結
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 1,203 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 30分鐘前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 4 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-chart-line text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Bloomberg</h3>
+                                <p class="text-xs text-gray-400">bloomberg.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu4')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu4" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            全球商業、金融市場和投資理財新聞
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 892 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 15分鐘前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 5 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Medium - Tech</h3>
+                                <p class="text-xs text-gray-400">medium.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu5')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu5" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            深度技術文章與產業洞察
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 423 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 3小時前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 6 -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-rocket text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Product Hunt</h3>
+                                <p class="text-xs text-gray-400">producthunt.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu6')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu6" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            最新產品發布與創新工具
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 156 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 45分鐘前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 7 - BBC -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-red-700 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-globe text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">BBC News</h3>
+                                <p class="text-xs text-gray-400">bbc.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu7')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu7" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            國際新聞與深度報導
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 1,832 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 10分鐘前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 8 - Financial Times -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-pink-600 to-pink-700 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-pound-sign text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Financial Times</h3>
+                                <p class="text-xs text-gray-400">ft.com</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu8')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu8" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            全球金融市場分析與商業新聞
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 765 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 25分鐘前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 9 - GitHub Blog -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-github text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">GitHub Blog</h3>
+                                <p class="text-xs text-gray-400">github.blog</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu9')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu9" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            開源專案更新與開發者工具
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 89 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 2天前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 10 - Harvard Business Review -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-red-800 to-red-900 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-university text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Harvard Business Review</h3>
+                                <p class="text-xs text-gray-400">hbr.org</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu10')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu10" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            商業管理策略與領導力洞察
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 234 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 1天前更新</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed 卡片 11 - Stack Overflow Blog -->
+                <div class="feed-card rounded-xl p-6 h-48 flex flex-col">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-stack-overflow text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold">Stack Overflow Blog</h3>
+                                <p class="text-xs text-gray-400">stackoverflow.blog</p>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button class="text-gray-400 hover:text-white" onclick="toggleMenu(event, 'menu11')">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div id="menu11" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg py-2 z-10">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">編輯</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700">刪除</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <p class="text-sm text-gray-400 line-clamp-2">
+                            程式設計問答與技術趨勢
+                        </p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-file-alt mr-1"></i> 178 篇文章</span>
+                            <span><i class="fas fa-clock mr-1"></i> 5小時前更新</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增 Feed Modal -->
+    <div id="addFeedModal" class="fixed inset-0 modal-backdrop z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-800 rounded-xl w-full max-w-md shadow-2xl">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-white">新增 RSS Feed</h2>
+                        <button onclick="closeAddFeedModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form>
+                        <!-- Feed URL -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-link mr-2"></i>Feed URL
+                            </label>
+                            <input 
+                                type="url" 
+                                class="input-field w-full px-4 py-3 rounded-lg text-white"
+                                placeholder="https://example.com/rss"
+                                required
+                            >
+                        </div>
+
+                        <!-- Feed 名稱 -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-tag mr-2"></i>名稱（選填）
+                            </label>
+                            <input 
+                                type="text" 
+                                class="input-field w-full px-4 py-3 rounded-lg text-white"
+                                placeholder="自訂 Feed 名稱"
+                            >
+                        </div>
+
+                        <!-- 分類 -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-folder mr-2"></i>分類
+                            </label>
+                            <select class="input-field w-full px-4 py-3 rounded-lg text-white">
+                                <option value="">選擇分類</option>
+                                <option value="tech">科技</option>
+                                <option value="business">商業</option>
+                                <option value="news">新聞</option>
+                                <option value="programming">程式設計</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+
+                        <!-- 按鈕 -->
+                        <div class="flex space-x-3">
+                            <button type="button" onclick="closeAddFeedModal()" class="flex-1 px-4 py-3 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-700 transition-colors">
+                                取消
+                            </button>
+                            <button type="submit" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors">
+                                <i class="fas fa-plus mr-2"></i>新增
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜尋 Modal -->
+    <div id="searchModal" class="fixed inset-0 modal-backdrop z-50 hidden">
+        <div class="flex items-start justify-center pt-20">
+            <div class="bg-gray-800 rounded-xl w-full max-w-2xl mx-4 shadow-2xl">
+                <div class="p-6">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <i class="fas fa-search text-gray-400 text-xl"></i>
+                        <input 
+                            type="text" 
+                            placeholder="搜尋電子報、文章或主題..."
+                            class="flex-1 bg-transparent text-white text-lg outline-none placeholder-gray-500"
+                            autofocus
+                        >
+                        <button onclick="closeSearchModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 搜尋建議 -->
+                    <div class="space-y-2">
+                        <p class="text-xs text-gray-500 mb-3">熱門搜尋</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                人工智慧
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                加密貨幣
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                生產力工具
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                創業
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 開啟新增 Feed Modal
+        function openAddFeedModal() {
+            document.getElementById('addFeedModal').classList.remove('hidden');
+        }
+        
+        // 關閉新增 Feed Modal
+        function closeAddFeedModal() {
+            document.getElementById('addFeedModal').classList.add('hidden');
+        }
+        
+        // 開啟搜尋 Modal
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.remove('hidden');
+        }
+        
+        // 關閉搜尋 Modal
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+        
+        // 切換下拉選單
+        function toggleMenu(event, menuId) {
+            event.stopPropagation();
+            const menu = document.getElementById(menuId);
+            const allMenus = document.querySelectorAll('[id^="menu"]');
+            
+            // 關閉其他選單
+            allMenus.forEach(m => {
+                if (m.id !== menuId) {
+                    m.classList.add('hidden');
+                }
+            });
+            
+            // 切換當前選單
+            menu.classList.toggle('hidden');
+        }
+        
+        // 點擊背景關閉 Modal
+        document.getElementById('addFeedModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAddFeedModal();
+            }
+        });
+        
+        document.getElementById('searchModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSearchModal();
+            }
+        });
+        
+        // 點擊任何地方關閉下拉選單
+        document.addEventListener('click', function() {
+            const allMenus = document.querySelectorAll('[id^="menu"]');
+            allMenus.forEach(menu => {
+                menu.classList.add('hidden');
+            });
+        });
+        
+        // ESC 鍵關閉 Modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAddFeedModal();
+                closeSearchModal();
+            }
+        });
+    </script>
+</body>
+</html>

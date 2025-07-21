@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS Reader - 首頁</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1d21;
+            color: #e4e6eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .sidebar {
+            background-color: #0f1114;
+            border-right: 1px solid #2d3139;
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover {
+            background-color: #1a1d21;
+        }
+        .nav-item.active {
+            background-color: #1a1d21;
+            border-left: 3px solid #3b82f6;
+        }
+        .article-card {
+            background-color: #242830;
+            border: 1px solid #2d3139;
+            transition: all 0.3s ease;
+        }
+        .article-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .highlight-box {
+            background-color: #2d3139;
+            border-left: 3px solid #fbbf24;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="h-screen flex">
+    <!-- 側邊欄 -->
+    <div class="sidebar w-64 h-full flex flex-col">
+        <!-- Logo區域 -->
+        <div class="p-6 border-b border-gray-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-rss text-white"></i>
+                </div>
+                <span class="text-xl font-bold text-white">RSS Reader</span>
+            </div>
+        </div>
+
+        <!-- 導航選單 -->
+        <nav class="flex-1 p-4">
+            <!-- 上半部導航 -->
+            <div class="space-y-2">
+                <a href="home.html" class="nav-item active flex items-center px-4 py-3 rounded-lg text-gray-300">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    <span>首頁</span>
+                </a>
+                <a href="feed.html" class="nav-item flex items-center px-4 py-3 rounded-lg text-gray-300 hover:text-white">
+                    <i class="fas fa-rss w-5 mr-3"></i>
+                    <span>Feed</span>
+                </a>
+            </div>
+
+            <!-- 下半部功能 -->
+            <div class="mt-auto pt-4 border-t border-gray-800">
+                <button onclick="openSearchModal()" class="nav-item w-full flex items-center px-4 py-3 rounded-lg text-gray-300 hover:text-white">
+                    <i class="fas fa-search w-5 mr-3"></i>
+                    <span>搜尋</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- 用戶資訊 -->
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gray-700 rounded-full"></div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-white">user@example.com</p>
+                    <p class="text-xs text-gray-400">免費方案</p>
+                </div>
+                <button class="text-gray-400 hover:text-white">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主內容區 -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- 頂部標題欄 -->
+        <div class="sticky top-0 bg-gray-800 border-b border-gray-700 px-8 py-4 z-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">最新文章</h1>
+                    <p class="text-sm text-gray-400 mt-1">來自您訂閱的所有來源</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <select class="bg-gray-700 text-gray-300 px-4 py-2 rounded-lg border border-gray-600">
+                        <option>最新發布</option>
+                        <option>最多閱讀</option>
+                        <option>未讀優先</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文章列表 -->
+        <div class="p-8 space-y-6">
+            <!-- 文章卡片 1 -->
+            <article class="article-card rounded-xl p-6 flex gap-6">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='14'%3EGame%3C/text%3E%3C/svg%3E" 
+                     alt="Article thumbnail" 
+                     class="w-32 h-32 rounded-lg object-cover flex-shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white mb-2 hover:text-blue-400 cursor-pointer">
+                                The Great Online Game
+                            </h2>
+                            <p class="text-gray-400 text-sm mb-3">
+                                In March, I wrote that Excel Never Dies. I may have spoken too soon. Rows very much...
+                            </p>
+                        </div>
+                        <span class="text-xs text-gray-500 whitespace-nowrap ml-4">May 10, 2021</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="fas fa-globe mr-1"></i> notboring.co
+                            </span>
+                            <span>• Packy McCormick</span>
+                            <span>• 17 mins</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-blue-900/30 text-blue-400 px-3 py-1 rounded-full text-xs">social</span>
+                            <span class="bg-purple-900/30 text-purple-400 px-3 py-1 rounded-full text-xs">twitter</span>
+                        </div>
+                    </div>
+                    <div class="highlight-box mt-4 p-4 rounded-lg">
+                        <h3 class="text-sm font-semibold text-yellow-400 mb-2">HIGHLIGHTS</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            We call someone who is not in control of their mind insane. What do we call someone who is not in control of their attention, which is the gateway to the mind?
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 文章卡片 2 -->
+            <article class="article-card rounded-xl p-6 flex gap-6">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='14'%3EBrain%3C/text%3E%3C/svg%3E" 
+                     alt="Article thumbnail" 
+                     class="w-32 h-32 rounded-lg object-cover flex-shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white mb-2 hover:text-blue-400 cursor-pointer">
+                                Building a Second Brain
+                            </h2>
+                            <p class="text-gray-400 text-sm mb-3">
+                                A revolutionary approach to enhancing productivity, creating flow, and vastly incre...
+                            </p>
+                        </div>
+                        <span class="text-xs text-gray-500 whitespace-nowrap ml-4">4h 24min</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="fas fa-user mr-1"></i> Tiago Forte
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-green-900/30 text-green-400 px-3 py-1 rounded-full text-xs">productivity</span>
+                            <span class="bg-indigo-900/30 text-indigo-400 px-3 py-1 rounded-full text-xs">system</span>
+                        </div>
+                    </div>
+                    <div class="highlight-box mt-4 p-4 rounded-lg">
+                        <h3 class="text-sm font-semibold text-yellow-400 mb-2">HIGHLIGHTS</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            Your job as a notetaker is to preserve the notes you're taking on the things you discover in such a way that they can survive the journey into the future...
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 文章卡片 3 -->
+            <article class="article-card rounded-xl p-6 flex gap-6">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='14'%3ESuccess%3C/text%3E%3C/svg%3E" 
+                     alt="Article thumbnail" 
+                     class="w-32 h-32 rounded-lg object-cover flex-shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white mb-2 hover:text-blue-400 cursor-pointer">
+                                How to Be Great? Just Be Good, Repeatably
+                            </h2>
+                            <p class="text-gray-400 text-sm mb-3">
+                                Thank you to the 80k people who have read this piece. It looks like many people are...
+                            </p>
+                        </div>
+                        <span class="text-xs text-gray-500 whitespace-nowrap ml-4">Jun 12, 2019</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="fas fa-globe mr-1"></i> blog.stephsmith.io
+                            </span>
+                            <span>• Steph Smith</span>
+                            <span>• 13 mins</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 文章卡片 4 -->
+            <article class="article-card rounded-xl p-6 flex gap-6">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Crect width='140' height='140' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%236B7280' font-family='Arial' font-size='14'%3EBitcoin%3C/text%3E%3C/svg%3E" 
+                     alt="Article thumbnail" 
+                     class="w-32 h-32 rounded-lg object-cover flex-shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <h2 class="text-xl font-semibold text-white mb-2 hover:text-blue-400 cursor-pointer">
+                                Bitcoin Whitepaper
+                            </h2>
+                            <p class="text-gray-400 text-sm mb-3">
+                                A purely peer-to-peer version of electronic cash would allow online payments to be sent...
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                            <span class="flex items-center">
+                                <i class="fas fa-user mr-1"></i> Satoshi Nakamoto
+                            </span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-orange-900/30 text-orange-400 px-3 py-1 rounded-full text-xs">bitcoin</span>
+                            <span class="bg-red-900/30 text-red-400 px-3 py-1 rounded-full text-xs">crypto</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- 搜尋 Modal -->
+    <div id="searchModal" class="fixed inset-0 modal-backdrop z-50 hidden">
+        <div class="flex items-start justify-center pt-20">
+            <div class="bg-gray-800 rounded-xl w-full max-w-2xl mx-4 shadow-2xl">
+                <div class="p-6">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <i class="fas fa-search text-gray-400 text-xl"></i>
+                        <input 
+                            type="text" 
+                            placeholder="搜尋電子報、文章或主題..."
+                            class="flex-1 bg-transparent text-white text-lg outline-none placeholder-gray-500"
+                            autofocus
+                        >
+                        <button onclick="closeSearchModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 搜尋建議 -->
+                    <div class="space-y-2">
+                        <p class="text-xs text-gray-500 mb-3">熱門搜尋</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                人工智慧
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                加密貨幣
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                生產力工具
+                            </span>
+                            <span class="bg-gray-700 text-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer hover:bg-gray-600">
+                                創業
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.remove('hidden');
+        }
+        
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+        
+        // 點擊背景關閉 Modal
+        document.getElementById('searchModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSearchModal();
+            }
+        });
+        
+        // ESC 鍵關閉 Modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSearchModal();
+            }
+        });
+    </script>
+</body>
+</html>

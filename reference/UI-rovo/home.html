@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 - WiseRSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .sidebar {
+            background-color: #1a1a1a;
+            border-right: 1px solid #333;
+        }
+        .main-content {
+            background-color: #1a1a1a;
+        }
+        .right-panel {
+            background-color: #1a1a1a;
+            border-left: 1px solid #333;
+        }
+        .article-card {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+            transition: all 0.3s ease;
+        }
+        .article-card:hover {
+            background-color: #353535;
+            border-color: #555;
+        }
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .nav-item:hover {
+            background-color: #2d2d2d;
+        }
+        .nav-item.active {
+            background-color: #3b82f6;
+        }
+        .tag {
+            background-color: #374151;
+            color: #d1d5db;
+        }
+        .search-modal {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden">
+    <div class="flex h-full">
+        <!-- 左側邊欄 -->
+        <div class="sidebar w-64 flex flex-col">
+            <!-- Logo區域 -->
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rss text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-bold">WiseRSS</span>
+                </div>
+            </div>
+
+            <!-- 導航區域 -->
+            <div class="flex-1 p-4">
+                <!-- 主要導航 -->
+                <div class="space-y-2 mb-8">
+                    <div class="nav-item active px-4 py-3 rounded-lg cursor-pointer flex items-center space-x-3">
+                        <i class="fas fa-home text-lg"></i>
+                        <span class="font-medium">首頁</span>
+                    </div>
+                    <div class="nav-item px-4 py-3 rounded-lg cursor-pointer flex items-center space-x-3" onclick="window.parent.location.href='feed.html'">
+                        <i class="fas fa-rss text-lg"></i>
+                        <span class="font-medium">Feed</span>
+                    </div>
+                </div>
+
+                <!-- 搜尋按鈕 -->
+                <div class="mb-8">
+                    <button 
+                        class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-3 transition-colors"
+                        onclick="openSearchModal()"
+                    >
+                        <i class="fas fa-search text-lg"></i>
+                        <span class="font-medium">搜尋電子報</span>
+                    </button>
+                </div>
+
+                <!-- 標籤區域 -->
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">標籤</h3>
+                    <div class="space-y-2">
+                        <div class="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
+                            <span class="text-sm">科技</span>
+                            <span class="text-xs text-gray-400">12</span>
+                        </div>
+                        <div class="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
+                            <span class="text-sm">商業</span>
+                            <span class="text-xs text-gray-400">8</span>
+                        </div>
+                        <div class="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
+                            <span class="text-sm">設計</span>
+                            <span class="text-xs text-gray-400">5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用戶區域 -->
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium">使用者</div>
+                        <div class="text-xs text-gray-400">user@example.com</div>
+                    </div>
+                    <button class="text-gray-400 hover:text-white">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中間內容區域 -->
+        <div class="main-content flex-1 flex flex-col">
+            <!-- 頂部工具欄 -->
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="text-2xl font-bold">Library</h1>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm">LATER</span>
+                            <span class="px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm">SHORTLIST</span>
+                            <span class="px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm">ARCHIVE</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fas fa-tags"></i>
+                            <span class="ml-2">Manage tags</span>
+                        </button>
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fas fa-clock"></i>
+                            <span class="ml-2">Last opened</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文章列表 -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="space-y-4">
+                    <!-- 文章項目 1 -->
+                    <div class="article-card p-6 rounded-lg cursor-pointer" onclick="selectArticle(1)">
+                        <div class="flex space-x-4">
+                            <img src="https://via.placeholder.com/80x80/4f46e5/ffffff?text=RSS" alt="文章圖片" class="w-20 h-20 rounded-lg object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-white">科技新聞：AI技術的最新發展</h3>
+                                    <span class="text-sm text-gray-400">May 10, 2024</span>
+                                </div>
+                                <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                                    人工智慧技術在過去一年中取得了重大突破，從自然語言處理到電腦視覺，各個領域都有顯著進展...
+                                </p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-globe mr-1"></i>
+                                        techcrunch.com
+                                    </span>
+                                    <span>Sarah Johnson</span>
+                                    <span>5 mins</span>
+                                    <span class="tag px-2 py-1 rounded">科技</span>
+                                    <span class="tag px-2 py-1 rounded">AI</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文章項目 2 -->
+                    <div class="article-card p-6 rounded-lg cursor-pointer" onclick="selectArticle(2)">
+                        <div class="flex space-x-4">
+                            <img src="https://via.placeholder.com/80x80/059669/ffffff?text=BIZ" alt="文章圖片" class="w-20 h-20 rounded-lg object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-white">創業指南：如何建立成功的商業模式</h3>
+                                    <span class="text-sm text-gray-400">May 9, 2024</span>
+                                </div>
+                                <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                                    在當今競爭激烈的商業環境中，建立一個可持續的商業模式是創業成功的關鍵因素...
+                                </p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-globe mr-1"></i>
+                                        harvard.edu
+                                    </span>
+                                    <span>Michael Chen</span>
+                                    <span>8 mins</span>
+                                    <span class="tag px-2 py-1 rounded">商業</span>
+                                    <span class="tag px-2 py-1 rounded">創業</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文章項目 3 -->
+                    <div class="article-card p-6 rounded-lg cursor-pointer" onclick="selectArticle(3)">
+                        <div class="flex space-x-4">
+                            <img src="https://via.placeholder.com/80x80/dc2626/ffffff?text=DES" alt="文章圖片" class="w-20 h-20 rounded-lg object-cover">
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between mb-2">
+                                    <h3 class="text-lg font-semibold text-white">設計趨勢：2024年UI/UX設計的新方向</h3>
+                                    <span class="text-sm text-gray-400">May 8, 2024</span>
+                                </div>
+                                <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                                    隨著技術的不斷進步，用戶界面和用戶體驗設計也在不斷演進，本文將探討2024年的設計趨勢...
+                                </p>
+                                <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                    <span class="flex items-center">
+                                        <i class="fas fa-globe mr-1"></i>
+                                        dribbble.com
+                                    </span>
+                                    <span>Emma Wilson</span>
+                                    <span>6 mins</span>
+                                    <span class="tag px-2 py-1 rounded">設計</span>
+                                    <span class="tag px-2 py-1 rounded">UI/UX</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側面板 -->
+        <div class="right-panel w-80 flex flex-col">
+            <!-- 頂部標籤 -->
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex space-x-2">
+                    <span class="px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm">Info</span>
+                    <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-sm">Notebook</span>
+                    <span class="px-3 py-1 bg-gray-600 text-gray-300 rounded-full text-sm">Links</span>
+                </div>
+            </div>
+
+            <!-- 筆記區域 -->
+            <div class="flex-1 p-6">
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">DOCUMENT NOTE</h3>
+                    <textarea 
+                        class="w-full h-32 bg-gray-700 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400 resize-none focus:outline-none focus:border-blue-500"
+                        placeholder="Add a document note..."
+                    ></textarea>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">HIGHLIGHTS</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-gray-700 rounded-lg">
+                            <p class="text-sm text-yellow-300 mb-2">
+                                "We call someone who is not in control of their mind insane. What do we call someone who is not in control of their attention, which is the gateway to the mind?"
+                            </p>
+                            <span class="text-xs text-gray-400">Highlighted text</span>
+                        </div>
+                        <div class="p-4 bg-gray-700 rounded-lg">
+                            <p class="text-sm text-green-300 mb-2">
+                                "Your job as a notetaker is to preserve the notes you're taking on the things you discover in such a way that they can survive the journey into the future."
+                            </p>
+                            <span class="text-xs text-gray-400">Important note</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 搜尋Modal -->
+    <div id="searchModal" class="search-modal fixed inset-0 z-50 hidden flex items-center justify-center">
+        <div class="modal-content rounded-2xl p-8 w-full max-w-2xl mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold">搜尋電子報</h2>
+                <button onclick="closeSearchModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 pl-12"
+                        placeholder="輸入關鍵字搜尋電子報..."
+                        id="searchInput"
+                    >
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="p-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <h4 class="font-medium text-white">TechCrunch Newsletter</h4>
+                    <p class="text-sm text-gray-400">最新科技新聞和創業資訊</p>
+                </div>
+                <div class="p-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <h4 class="font-medium text-white">Harvard Business Review</h4>
+                    <p class="text-sm text-gray-400">商業管理和策略分析</p>
+                </div>
+                <div class="p-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <h4 class="font-medium text-white">Design Weekly</h4>
+                    <p class="text-sm text-gray-400">設計趨勢和創意靈感</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.remove('hidden');
+            document.getElementById('searchInput').focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+
+        function selectArticle(id) {
+            // 移除所有文章的選中狀態
+            document.querySelectorAll('.article-card').forEach(card => {
+                card.classList.remove('ring-2', 'ring-blue-500');
+            });
+            
+            // 添加選中狀態到當前文章
+            event.currentTarget.classList.add('ring-2', 'ring-blue-500');
+        }
+
+        // ESC鍵關閉modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeSearchModal();
+            }
+        });
+
+        // 點擊modal外部關閉
+        document.getElementById('searchModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeSearchModal();
+            }
+        });
+    </script>
+</body>
+</html>

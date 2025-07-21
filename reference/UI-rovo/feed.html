@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed管理 - WiseRSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .feed-card {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+            transition: all 0.3s ease;
+        }
+        .feed-card:hover {
+            background-color: #353535;
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+        .add-feed-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .add-feed-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+        }
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .status-active {
+            background-color: #10b981;
+        }
+        .status-inactive {
+            background-color: #ef4444;
+        }
+        .status-pending {
+            background-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-6 py-8">
+        <!-- 頁面標題 -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white mb-2">Feed 管理</h1>
+                <p class="text-gray-400">管理您的RSS訂閱源，新增或移除電子報</p>
+            </div>
+            <button 
+                class="add-feed-btn px-6 py-3 rounded-lg font-medium text-white transition-all duration-300"
+                onclick="openAddFeedModal()"
+            >
+                <i class="fas fa-plus mr-2"></i>
+                新增 RSS Feed
+            </button>
+        </div>
+
+        <!-- 統計卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-600 rounded-lg">
+                        <i class="fas fa-rss text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">總訂閱數</p>
+                        <p class="text-2xl font-bold text-white">12</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-600 rounded-lg">
+                        <i class="fas fa-check-circle text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">活躍訂閱</p>
+                        <p class="text-2xl font-bold text-white">10</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-yellow-600 rounded-lg">
+                        <i class="fas fa-clock text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">待處理</p>
+                        <p class="text-2xl font-bold text-white">2</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-600 rounded-lg">
+                        <i class="fas fa-envelope text-white text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">今日新文章</p>
+                        <p class="text-2xl font-bold text-white">25</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜尋和篩選 -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="flex-1">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none pl-12"
+                        placeholder="搜尋 RSS Feed..."
+                        id="searchFeeds"
+                    >
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            <select class="input-field px-4 py-3 rounded-lg text-white focus:outline-none">
+                <option value="">所有狀態</option>
+                <option value="active">活躍</option>
+                <option value="inactive">停用</option>
+                <option value="pending">待處理</option>
+            </select>
+            <select class="input-field px-4 py-3 rounded-lg text-white focus:outline-none">
+                <option value="">所有分類</option>
+                <option value="tech">科技</option>
+                <option value="business">商業</option>
+                <option value="design">設計</option>
+            </select>
+        </div>
+
+        <!-- Feed 列表 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Feed 項目 1 -->
+            <div class="feed-card rounded-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://via.placeholder.com/48x48/3b82f6/ffffff?text=TC" alt="TechCrunch" class="w-12 h-12 rounded-lg">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">TechCrunch</h3>
+                            <p class="text-sm text-gray-400">techcrunch.com</p>
+                        </div>
+                    </div>
+                    <span class="status-active px-3 py-1 rounded-full text-xs text-white">活躍</span>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">最新的科技新聞、創業資訊和產品評測</p>
+                <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                    <span><i class="fas fa-newspaper mr-1"></i>125 篇文章</span>
+                    <span><i class="fas fa-clock mr-1"></i>2小時前更新</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 bg-blue-600 text-white rounded text-xs">科技</span>
+                    <span class="px-2 py-1 bg-purple-600 text-white rounded text-xs">創業</span>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-eye mr-1"></i>查看
+                        </button>
+                        <button class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-edit mr-1"></i>編輯
+                        </button>
+                    </div>
+                    <button class="text-red-400 hover:text-red-300 transition-colors" onclick="deleteFeed('TechCrunch')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feed 項目 2 -->
+            <div class="feed-card rounded-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://via.placeholder.com/48x48/10b981/ffffff?text=HBR" alt="Harvard Business Review" class="w-12 h-12 rounded-lg">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Harvard Business Review</h3>
+                            <p class="text-sm text-gray-400">hbr.org</p>
+                        </div>
+                    </div>
+                    <span class="status-active px-3 py-1 rounded-full text-xs text-white">活躍</span>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">商業管理、領導力和策略分析的權威資源</p>
+                <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                    <span><i class="fas fa-newspaper mr-1"></i>89 篇文章</span>
+                    <span><i class="fas fa-clock mr-1"></i>5小時前更新</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 bg-green-600 text-white rounded text-xs">商業</span>
+                    <span class="px-2 py-1 bg-yellow-600 text-white rounded text-xs">管理</span>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-eye mr-1"></i>查看
+                        </button>
+                        <button class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-edit mr-1"></i>編輯
+                        </button>
+                    </div>
+                    <button class="text-red-400 hover:text-red-300 transition-colors" onclick="deleteFeed('Harvard Business Review')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feed 項目 3 -->
+            <div class="feed-card rounded-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://via.placeholder.com/48x48/ef4444/ffffff?text=DW" alt="Design Weekly" class="w-12 h-12 rounded-lg">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Design Weekly</h3>
+                            <p class="text-sm text-gray-400">designweekly.com</p>
+                        </div>
+                    </div>
+                    <span class="status-pending px-3 py-1 rounded-full text-xs text-white">待處理</span>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">每週精選的設計趨勢、工具和靈感</p>
+                <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                    <span><i class="fas fa-newspaper mr-1"></i>45 篇文章</span>
+                    <span><i class="fas fa-clock mr-1"></i>1天前更新</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 bg-red-600 text-white rounded text-xs">設計</span>
+                    <span class="px-2 py-1 bg-indigo-600 text-white rounded text-xs">UI/UX</span>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-eye mr-1"></i>查看
+                        </button>
+                        <button class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-edit mr-1"></i>編輯
+                        </button>
+                    </div>
+                    <button class="text-red-400 hover:text-red-300 transition-colors" onclick="deleteFeed('Design Weekly')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feed 項目 4 -->
+            <div class="feed-card rounded-lg p-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://via.placeholder.com/48x48/8b5cf6/ffffff?text=AI" alt="AI News" class="w-12 h-12 rounded-lg">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">AI News Daily</h3>
+                            <p class="text-sm text-gray-400">ainews.com</p>
+                        </div>
+                    </div>
+                    <span class="status-inactive px-3 py-1 rounded-full text-xs text-white">停用</span>
+                </div>
+                <p class="text-gray-300 text-sm mb-4">人工智慧領域的最新發展和研究成果</p>
+                <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                    <span><i class="fas fa-newspaper mr-1"></i>78 篇文章</span>
+                    <span><i class="fas fa-clock mr-1"></i>3天前更新</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 bg-purple-600 text-white rounded text-xs">AI</span>
+                    <span class="px-2 py-1 bg-blue-600 text-white rounded text-xs">機器學習</span>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-eye mr-1"></i>查看
+                        </button>
+                        <button class="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-sm transition-colors">
+                            <i class="fas fa-edit mr-1"></i>編輯
+                        </button>
+                    </div>
+                    <button class="text-red-400 hover:text-red-300 transition-colors" onclick="deleteFeed('AI News Daily')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增 Feed Modal -->
+    <div id="addFeedModal" class="modal-overlay fixed inset-0 z-50 hidden flex items-center justify-center">
+        <div class="modal-content rounded-2xl p-8 w-full max-w-2xl mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white">新增 RSS Feed</h2>
+                <button onclick="closeAddFeedModal()" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-6" onsubmit="addNewFeed(event)">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">RSS URL</label>
+                    <input 
+                        type="url" 
+                        class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                        placeholder="https://example.com/rss"
+                        required
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Feed 名稱</label>
+                    <input 
+                        type="text" 
+                        class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                        placeholder="輸入 Feed 名稱"
+                        required
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">描述</label>
+                    <textarea 
+                        class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none h-24 resize-none"
+                        placeholder="輸入 Feed 描述"
+                    ></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">分類標籤</label>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button type="button" class="tag-btn px-3 py-1 bg-gray-600 hover:bg-blue-600 text-white rounded text-sm transition-colors" onclick="toggleTag(this, '科技')">科技</button>
+                        <button type="button" class="tag-btn px-3 py-1 bg-gray-600 hover:bg-green-600 text-white rounded text-sm transition-colors" onclick="toggleTag(this, '商業')">商業</button>
+                        <button type="button" class="tag-btn px-3 py-1 bg-gray-600 hover:bg-red-600 text-white rounded text-sm transition-colors" onclick="toggleTag(this, '設計')">設計</button>
+                        <button type="button" class="tag-btn px-3 py-1 bg-gray-600 hover:bg-purple-600 text-white rounded text-sm transition-colors" onclick="toggleTag(this, 'AI')">AI</button>
+                    </div>
+                    <input 
+                        type="text" 
+                        class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-400 focus:outline-none"
+                        placeholder="或輸入自定義標籤"
+                    >
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 text-green-600 bg-gray-700 border-gray-600 rounded focus:ring-green-500" checked>
+                        <span class="ml-2 text-sm text-gray-300">立即啟用</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500">
+                        <span class="ml-2 text-sm text-gray-300">自動更新</span>
+                    </label>
+                </div>
+                
+                <div class="flex space-x-4 pt-4">
+                    <button 
+                        type="submit" 
+                        class="flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                        <i class="fas fa-plus mr-2"></i>
+                        新增 Feed
+                    </button>
+                    <button 
+                        type="button" 
+                        onclick="closeAddFeedModal()"
+                        class="flex-1 py-3 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                        取消
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAddFeedModal() {
+            document.getElementById('addFeedModal').classList.remove('hidden');
+        }
+
+        function closeAddFeedModal() {
+            document.getElementById('addFeedModal').classList.add('hidden');
+        }
+
+        function toggleTag(button, tagName) {
+            if (button.classList.contains('bg-gray-600')) {
+                button.classList.remove('bg-gray-600');
+                button.classList.add('bg-blue-600');
+            } else {
+                button.classList.remove('bg-blue-600', 'bg-green-600', 'bg-red-600', 'bg-purple-600');
+                button.classList.add('bg-gray-600');
+            }
+        }
+
+        function addNewFeed(event) {
+            event.preventDefault();
+            alert('新增 Feed 成功！');
+            closeAddFeedModal();
+        }
+
+        function deleteFeed(feedName) {
+            if (confirm(`確定要刪除 "${feedName}" 嗎？`)) {
+                alert(`已刪除 "${feedName}"`);
+            }
+        }
+
+        // ESC鍵關閉modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAddFeedModal();
+            }
+        });
+
+        // 點擊modal外部關閉
+        document.getElementById('addFeedModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeAddFeedModal();
+            }
+        });
+    </script>
+</body>
+</html>

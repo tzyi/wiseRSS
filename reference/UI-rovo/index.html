@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiseRSS - 智慧RSS閱讀系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .iframe-container {
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #1a1a1a;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .iframe-container iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        .page-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold page-title mb-4">WiseRSS</h1>
+            <p class="text-xl text-gray-400">智慧RSS閱讀系統 - 高保真原型展示</p>
+            <div class="mt-6 flex justify-center space-x-4">
+                <span class="px-4 py-2 bg-blue-600 rounded-full text-sm">登入頁面</span>
+                <span class="px-4 py-2 bg-green-600 rounded-full text-sm">首頁</span>
+                <span class="px-4 py-2 bg-purple-600 rounded-full text-sm">Feed管理</span>
+                <span class="px-4 py-2 bg-orange-600 rounded-full text-sm">搜索功能</span>
+            </div>
+        </div>
+
+        <!-- 原型展示區域 -->
+        <div class="space-y-16">
+            <!-- 登入頁面 -->
+            <section>
+                <h2 class="text-3xl font-bold mb-6 text-center">
+                    <i class="fas fa-sign-in-alt mr-3 text-blue-500"></i>
+                    登入頁面
+                </h2>
+                <div class="iframe-container h-96">
+                    <iframe src="login.html"></iframe>
+                </div>
+            </section>
+
+            <!-- 首頁 -->
+            <section>
+                <h2 class="text-3xl font-bold mb-6 text-center">
+                    <i class="fas fa-home mr-3 text-green-500"></i>
+                    首頁 - RSS文章列表
+                </h2>
+                <div class="iframe-container h-[800px]">
+                    <iframe src="home.html"></iframe>
+                </div>
+            </section>
+
+            <!-- Feed管理頁面 -->
+            <section>
+                <h2 class="text-3xl font-bold mb-6 text-center">
+                    <i class="fas fa-rss mr-3 text-purple-500"></i>
+                    Feed管理頁面
+                </h2>
+                <div class="iframe-container h-96">
+                    <iframe src="feed.html"></iframe>
+                </div>
+            </section>
+
+            <!-- 搜索Modal展示 -->
+            <section>
+                <h2 class="text-3xl font-bold mb-6 text-center">
+                    <i class="fas fa-search mr-3 text-orange-500"></i>
+                    搜索功能展示
+                </h2>
+                <div class="iframe-container h-96">
+                    <iframe src="search-demo.html"></iframe>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-gray-500">
+            <p>© 2024 WiseRSS - 高保真原型設計 | 可直接用於開發</p>
+        </footer>
+    </div>
+</body>
+</html>

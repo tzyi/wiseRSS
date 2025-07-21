@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索功能展示 - WiseRSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0f0f0f;
+            color: #e5e5e5;
+        }
+        .search-container {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+        }
+        .search-result {
+            background-color: #2d2d2d;
+            border: 1px solid #404040;
+            transition: all 0.3s ease;
+        }
+        .search-result:hover {
+            background-color: #353535;
+            border-color: #555;
+            transform: translateY(-1px);
+        }
+        .input-field {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .filter-tag {
+            background-color: #374151;
+            transition: all 0.3s ease;
+        }
+        .filter-tag:hover {
+            background-color: #4b5563;
+        }
+        .filter-tag.active {
+            background-color: #3b82f6;
+        }
+        .highlight {
+            background-color: #fbbf24;
+            color: #000;
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- 搜索標題 -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">
+                <i class="fas fa-search mr-3 text-blue-500"></i>
+                搜索功能展示
+            </h1>
+            <p class="text-gray-400">展示RSS系統的全局搜索功能</p>
+        </div>
+
+        <!-- 搜索容器 -->
+        <div class="search-container rounded-2xl p-8 mb-8">
+            <!-- 搜索輸入框 -->
+            <div class="mb-6">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        class="input-field w-full px-6 py-4 rounded-xl text-white placeholder-gray-400 focus:outline-none pl-14 text-lg"
+                        placeholder="搜索文章、RSS源、標籤..."
+                        id="searchInput"
+                        value="人工智慧"
+                    >
+                    <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 搜索篩選器 -->
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-3">
+                    <button class="filter-tag active px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-newspaper mr-1"></i>全部
+                    </button>
+                    <button class="filter-tag px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-file-alt mr-1"></i>文章
+                    </button>
+                    <button class="filter-tag px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-rss mr-1"></i>RSS源
+                    </button>
+                    <button class="filter-tag px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-tags mr-1"></i>標籤
+                    </button>
+                    <button class="filter-tag px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-calendar mr-1"></i>本週
+                    </button>
+                    <button class="filter-tag px-4 py-2 rounded-full text-sm font-medium text-white">
+                        <i class="fas fa-star mr-1"></i>已收藏
+                    </button>
+                </div>
+            </div>
+
+            <!-- 搜索統計 -->
+            <div class="mb-6 text-sm text-gray-400">
+                找到 <span class="text-white font-semibold">127</span> 個結果，用時 <span class="text-white">0.23</span> 秒
+            </div>
+        </div>
+
+        <!-- 搜索結果 -->
+        <div class="space-y-4">
+            <!-- 文章結果 1 -->
+            <div class="search-result rounded-lg p-6">
+                <div class="flex items-start space-x-4">
+                    <img src="https://via.placeholder.com/60x60/3b82f6/ffffff?text=AI" alt="文章圖片" class="w-15 h-15 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-white">
+                                <span class="highlight">人工智慧</span>技術在醫療領域的突破性應用
+                            </h3>
+                            <span class="text-sm text-gray-400">2天前</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                            最新研究顯示，<span class="highlight">人工智慧</span>在醫療診斷方面取得了重大突破，準確率已達到95%以上。這項技術將徹底改變傳統醫療模式...
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fas fa-globe mr-1"></i>
+                                    MIT Technology Review
+                                </span>
+                                <span>Dr. Sarah Chen</span>
+                                <span>8 mins read</span>
+                                <span class="px-2 py-1 bg-blue-600 text-white rounded">AI</span>
+                                <span class="px-2 py-1 bg-green-600 text-white rounded">醫療</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-gray-400 hover:text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-blue-400">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 文章結果 2 -->
+            <div class="search-result rounded-lg p-6">
+                <div class="flex items-start space-x-4">
+                    <img src="https://via.placeholder.com/60x60/10b981/ffffff?text=ML" alt="文章圖片" class="w-15 h-15 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-white">
+                                機器學習與<span class="highlight">人工智慧</span>：未來十年的發展趨勢
+                            </h3>
+                            <span class="text-sm text-gray-400">1週前</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mb-3 line-clamp-2">
+                            專家預測，<span class="highlight">人工智慧</span>將在未來十年內實現更多突破，特別是在自然語言處理和電腦視覺領域。企業應該如何準備迎接這個變革...
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fas fa-globe mr-1"></i>
+                                    Harvard Business Review
+                                </span>
+                                <span>Prof. Michael Zhang</span>
+                                <span>12 mins read</span>
+                                <span class="px-2 py-1 bg-purple-600 text-white rounded">機器學習</span>
+                                <span class="px-2 py-1 bg-blue-600 text-white rounded">AI</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-yellow-400">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button class="text-gray-400 hover:text-blue-400">
+                                    <i class="fas fa-share"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RSS源結果 -->
+            <div class="search-result rounded-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-start space-x-4">
+                    <div class="w-15 h-15 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rss text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-white">
+                                <span class="highlight">人工智慧</span> Weekly Newsletter
+                            </h3>
+                            <span class="px-3 py-1 bg-blue-600 text-white rounded-full text-xs">RSS源</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mb-3">
+                            每週精選的<span class="highlight">人工智慧</span>新聞、研究論文和行業動態。涵蓋機器學習、深度學習、自然語言處理等領域。
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                <span class="flex items-center">
+                                    <i class="fas fa-globe mr-1"></i>
+                                    aiweekly.co
+                                </span>
+                                <span>156 篇文章</span>
+                                <span>每週更新</span>
+                                <span class="px-2 py-1 bg-blue-600 text-white rounded">AI</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm">
+                                    <i class="fas fa-plus mr-1"></i>訂閱
+                                </button>
+                                <button class="text-gray-400 hover:text-blue-400">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 標籤結果 -->
+            <div class="search-result rounded-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-start space-x-4">
+                    <div class="w-15 h-15 bg-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-tag text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-lg font-semibold text-white">
+                                #<span class="highlight">人工智慧</span>
+                            </h3>
+                            <span class="px-3 py-1 bg-purple-600 text-white rounded-full text-xs">標籤</span>
+                        </div>
+                        <p class="text-gray-300 text-sm mb-3">
+                            包含 <span class="highlight">人工智慧</span> 標籤的所有文章和RSS源。共有 89 篇相關文章。
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                                <span>89 篇文章</span>
+                                <span>12 個RSS源</span>
+                                <span>最近更新：2小時前</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm">
+                                    <i class="fas fa-eye mr-1"></i>查看全部
+                                </button>
+                                <button class="text-gray-400 hover:text-purple-400">
+                                    <i class="fas fa-bell"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁 -->
+        <div class="flex items-center justify-center mt-8 space-x-2">
+            <button class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded">1</button>
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">2</button>
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">3</button>
+            <span class="px-4 py-2 text-gray-400">...</span>
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">12</button>
+            <button class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- 搜索建議 -->
+        <div class="mt-8 p-6 bg-gray-800 rounded-lg">
+            <h3 class="text-lg font-semibold text-white mb-4">相關搜索建議</h3>
+            <div class="flex flex-wrap gap-2">
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">機器學習</button>
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">深度學習</button>
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">自然語言處理</button>
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">電腦視覺</button>
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">神經網路</button>
+                <button class="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded-full text-sm">AI倫理</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 搜索功能模擬
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value;
+            if (query.length > 0) {
+                // 模擬搜索結果更新
+                console.log('搜索:', query);
+            }
+        });
+
+        // 篩選器切換
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // 收藏功能
+        document.querySelectorAll('.fa-star').forEach(star => {
+            star.addEventListener('click', function() {
+                this.classList.toggle('text-yellow-400');
+                this.classList.toggle('text-gray-400');
+            });
+        });
+    </script>
+</body>
+</html>
