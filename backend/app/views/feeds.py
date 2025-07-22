@@ -12,7 +12,7 @@ feeds_bp = Blueprint('feeds', __name__)
 def get_feeds():
     """Get user's feeds with optional filtering"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get query parameters
         search = request.args.get('search', '').strip()
@@ -78,7 +78,7 @@ def get_feeds():
 def get_feed(feed_id):
     """Get specific feed"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         feed = Feed.query.filter_by(id=feed_id, user_id=user_id).first()
         if not feed:
@@ -96,7 +96,7 @@ def get_feed(feed_id):
 def create_feed():
     """Create new feed"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         if not data:
@@ -148,7 +148,7 @@ def create_feed():
 def update_feed(feed_id):
     """Update feed"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         feed = Feed.query.filter_by(id=feed_id, user_id=user_id).first()
         if not feed:
@@ -188,7 +188,7 @@ def update_feed(feed_id):
 def delete_feed(feed_id):
     """Delete feed and all associated articles"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         feed = Feed.query.filter_by(id=feed_id, user_id=user_id).first()
         if not feed:
@@ -211,7 +211,7 @@ def delete_feed(feed_id):
 def refresh_feed(feed_id):
     """Manually refresh a feed"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         feed = Feed.query.filter_by(id=feed_id, user_id=user_id).first()
         if not feed:
@@ -239,7 +239,7 @@ def refresh_feed(feed_id):
 def get_feed_stats():
     """Get feed statistics for the user"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get feed counts by status
         total_feeds = Feed.query.filter_by(user_id=user_id).count()
@@ -273,7 +273,7 @@ def get_feed_stats():
 def get_categories():
     """Get list of categories used by user's feeds"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         categories = db.session.query(Feed.category, func.count(Feed.id).label('count')).filter(
             Feed.user_id == user_id,

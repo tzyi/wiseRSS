@@ -131,9 +131,13 @@ const LoginPage = () => {
               />
               <span className="ml-2 text-sm text-gray-300">記住我</span>
             </label>
-            <a href="#" className="text-sm text-blue-400 hover:text-blue-300">
+            <button
+              type="button"
+              className="text-sm text-blue-400 hover:text-blue-300 underline focus:outline-none bg-transparent"
+              // onClick={() => { /* handle forgot password */ }}
+            >
               忘記密碼？
-            </a>
+            </button>
           </div>
 
           {/* Login Button */}
@@ -186,7 +190,7 @@ const LoginPage = () => {
         {/* Register Link */}
         <div className="text-center mt-6">
           <span className="text-gray-400">還沒有帳號？</span>
-          <a href="#" className="text-blue-400 hover:text-blue-300 ml-1">
+          <a href="/register" className="text-blue-400 hover:text-blue-300 ml-1">
             立即註冊
           </a>
         </div>

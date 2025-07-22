@@ -13,7 +13,7 @@ articles_bp = Blueprint('articles', __name__)
 def get_articles():
     """Get user's articles with filtering and pagination"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get query parameters
         status = request.args.get('status', 'later').strip()  # later, shortlist, archive
@@ -95,7 +95,7 @@ def get_articles():
 def get_article(article_id):
     """Get specific article"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article through their feeds
         article = db.session.query(Article).join(Feed).filter(
@@ -116,7 +116,7 @@ def get_article(article_id):
 def mark_as_read(article_id):
     """Mark article as read"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -145,7 +145,7 @@ def mark_as_read(article_id):
 def mark_as_unread(article_id):
     """Mark article as unread"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -174,7 +174,7 @@ def mark_as_unread(article_id):
 def toggle_bookmark(article_id):
     """Toggle article bookmark status"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -204,7 +204,7 @@ def toggle_bookmark(article_id):
 def update_reading_status(article_id):
     """Update article reading status"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -243,7 +243,7 @@ def update_reading_status(article_id):
 def rate_article(article_id):
     """Rate an article (1-5 stars)"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -280,7 +280,7 @@ def rate_article(article_id):
 def get_notes(article_id):
     """Get notes for an article"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         user_article = UserArticle.query.filter_by(
             user_id=user_id,
@@ -310,7 +310,7 @@ def get_notes(article_id):
 def add_note(article_id):
     """Add note to an article"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -351,7 +351,7 @@ def add_note(article_id):
 def get_highlights(article_id):
     """Get highlights for an article"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         user_article = UserArticle.query.filter_by(
             user_id=user_id,
@@ -372,7 +372,7 @@ def get_highlights(article_id):
 def add_highlight(article_id):
     """Add highlight to an article"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Verify user has access to this article
         article = db.session.query(Article).join(Feed).filter(
@@ -413,7 +413,7 @@ def add_highlight(article_id):
 def search_articles():
     """Search articles"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get query parameters
         q = request.args.get('q', '').strip()

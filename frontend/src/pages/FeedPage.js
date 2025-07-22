@@ -13,7 +13,7 @@ const FeedPage = () => {
   
   const queryClient = useQueryClient();
 
-  const { data: feeds = [], isLoading, error } = useQuery(
+  const { data: feedsData = {}, isLoading, error } = useQuery(
     ['feeds', { search: searchQuery, status: statusFilter, category: categoryFilter }],
     () => feedService.getFeeds({ 
       search: searchQuery,
@@ -24,6 +24,8 @@ const FeedPage = () => {
       staleTime: 5 * 60 * 1000, // 5 minutes
     }
   );
+
+  const feeds = feedsData.feeds || [];
 
   const { data: stats = {} } = useQuery(
     'feed-stats',
@@ -187,7 +189,7 @@ const FeedPage = () => {
               </div>
             </div>
           ) : (
-            feeds.map((feed) => (
+            Array.isArray(feeds) && feeds.map((feed) => (
               <FeedCard
                 key={feed.id}
                 feed={feed}

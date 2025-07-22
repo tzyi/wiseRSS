@@ -98,7 +98,7 @@ def register():
 def verify():
     """Verify JWT token and return user info"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user or not user.is_active:
@@ -117,7 +117,7 @@ def verify():
 def refresh():
     """Refresh access token"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user or not user.is_active:
@@ -150,7 +150,7 @@ def logout():
 def get_profile():
     """Get user profile"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -166,7 +166,7 @@ def get_profile():
 def update_profile():
     """Update user profile"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -198,7 +198,7 @@ def update_profile():
 def change_password():
     """Change user password"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:

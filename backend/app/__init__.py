@@ -19,6 +19,21 @@ def create_app(config_name='default'):
     migrate.init_app(app, db)
     CORS(app, origins=app.config['CORS_ORIGINS'])
     
+    # JWT configuration
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        return str(user)
+    
+    @jwt.user_lookup_loader
+    def user_lookup_callback(_jwt_header, jwt_data):
+        identity = jwt_data["sub"]
+        try:
+            user_id = int(identity)
+            from app.models.user import User
+            return User.query.filter_by(id=user_id).one_or_none()
+        except (ValueError, TypeError):
+            return None
+    
     # Register blueprints
     from app.views.auth import auth_bp
     from app.views.feeds import feeds_bp

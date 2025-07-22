@@ -2,6 +2,13 @@
 
 WiseRSS 是一個現代化的 RSS 閱讀器，提供智能的文章管理、分類和閱讀體驗。採用 React + Flask 全棧架構，支持多種閱讀模式和個性化設置。
 
+![](./img/login.png)
+![](./img/home.png)
+![](./img/feed.png)
+![](./img/search.png)
+
+
+
 ## 🌟 主要特性
 
 ### 📖 智能閱讀體驗

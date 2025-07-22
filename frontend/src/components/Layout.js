@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import { useAuth } from '../contexts/AuthContext';
+import { feedService } from '../services/feedService';
 import SearchModal from './SearchModal';
 
 const Layout = ({ children, rightPanel }) => {
@@ -8,6 +10,18 @@ const Layout = ({ children, rightPanel }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+  // Fetch user's feeds for sidebar
+  const { data: feedsData = {} } = useQuery(
+    'sidebar-feeds',
+    () => feedService.getFeeds(),
+    {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      enabled: !!user, // Only fetch if user is authenticated
+    }
+  );
+
+  const feeds = feedsData.feeds || [];
 
   const handleLogout = () => {
     logout();
@@ -65,25 +79,53 @@ const Layout = ({ children, rightPanel }) => {
             </button>
           </div>
 
-          {/* Tags */}
+          {/* Subscribed Feeds */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wide">
-              標籤
+              訂閱列表
             </h3>
-            <div className="space-y-2">
-              <div className="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
-                <span className="text-sm">科技</span>
-                <span className="text-xs text-gray-400">12</span>
-              </div>
-              <div className="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
-                <span className="text-sm">商業</span>
-                <span className="text-xs text-gray-400">8</span>
-              </div>
-              <div className="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between">
-                <span className="text-sm">設計</span>
-                <span className="text-xs text-gray-400">5</span>
-              </div>
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {feeds.length > 0 ? (
+                feeds.map((feed) => (
+                  <div key={feed.id} className="nav-item px-4 py-2 rounded-lg cursor-pointer flex items-center justify-between hover:bg-gray-700">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      {feed.image_url ? (
+                        <img
+                          src={feed.image_url}
+                          alt={feed.title}
+                          className="w-4 h-4 rounded flex-shrink-0"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <i className="fas fa-rss text-xs text-gray-400 flex-shrink-0"></i>
+                      )}
+                      <span className="text-sm truncate" title={feed.title}>
+                        {feed.title}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-400 flex-shrink-0">
+                      {feed.total_articles || 0}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="px-4 py-2 text-sm text-gray-500">
+                  暫無訂閱的 Feed
+                </div>
+              )}
             </div>
+            {feeds.length > 0 && (
+              <div className="mt-4">
+                <button
+                  className="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors"
+                  onClick={() => navigate('/feeds')}
+                >
+                  管理訂閱
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

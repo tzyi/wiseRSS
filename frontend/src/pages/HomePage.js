@@ -9,13 +9,21 @@ const HomePage = () => {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [filter, setFilter] = useState('LATER');
 
-  const { data: articles = [], isLoading, error } = useQuery(
+  const { data: articlesRaw = [], isLoading, error } = useQuery(
     ['articles', filter],
     () => articleService.getArticles({ status: filter.toLowerCase() }),
     {
       staleTime: 5 * 60 * 1000, // 5 minutes
     }
   );
+
+  console.log('articlesRaw', articlesRaw);
+
+  const articles = Array.isArray(articlesRaw)
+    ? articlesRaw
+    : Array.isArray(articlesRaw?.results)
+      ? articlesRaw.results
+      : [];
 
   const filterOptions = ['LATER', 'SHORTLIST', 'ARCHIVE'];
 
