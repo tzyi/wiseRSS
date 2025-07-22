@@ -1,155 +1,269 @@
 # WiseRSS - 智慧RSS閱讀系統
 
-一個現代化的Web RSS閱讀系統，採用React前端和Flask後端架構，提供優雅的用戶體驗和強大的RSS管理功能。
+WiseRSS 是一個現代化的 RSS 閱讀器，提供智能的文章管理、分類和閱讀體驗。採用 React + Flask 全棧架構，支持多種閱讀模式和個性化設置。
 
-## 🚀 項目特色
+## 🌟 主要特性
 
-### 核心功能
-- **RSS訂閱管理**：輕鬆添加、編輯、刪除RSS源
-- **智能文章閱讀**：現代化的閱讀界面，支持筆記和高亮
-- **全局搜索**：快速搜索文章、RSS源和標籤
-- **分類管理**：靈活的標籤和分類系統
-- **閱讀進度追蹤**：自動記錄閱讀狀態和進度
-- **收藏系統**：收藏重要文章，方便後續查看
-- **響應式設計**：完美適配桌面、平板和手機
+### 📖 智能閱讀體驗
+- **三欄式佈局**: 導航側欄 + 文章列表 + 閱讀面板
+- **多種閱讀狀態**: Later (稍後閱讀) / Shortlist (收藏) / Archive (存檔)
+- **實時筆記系統**: 支持文章筆記、重點標記和評分
+- **全文搜索**: 快速查找文章內容
+- **閱讀進度追蹤**: 自動記錄閱讀位置和時間
 
-### 技術亮點
-- **現代化UI**：基於Tailwind CSS的深色主題設計
-- **高性能**：React Query實現的智能數據緩存
-- **安全認證**：JWT token認證系統
-- **RESTful API**：完整的後端API接口
-- **數據庫支持**：支持SQLite、PostgreSQL、MySQL
-- **自動更新**：定時自動獲取RSS源更新
+### 🗂️ Feed 管理
+- **智能分類**: 支持自定義分類和標籤
+- **批量管理**: 批量添加、編輯、刪除 RSS 源
+- **狀態監控**: 實時監控 Feed 更新狀態
+- **錯誤處理**: 智能處理 RSS 源錯誤和重試
+- **統計儀表板**: 直觀的 Feed 統計信息
 
-## 🏗️ 技術架構
+### 🎨 現代化界面
+- **深色主題**: 護眼的深色界面設計
+- **響應式設計**: 支持桌面、平板、手機多端適配
+- **流暢動畫**: 優雅的交互動效
+- **個性化設置**: 支持主題、語言、佈局自定義
 
-### 前端技術棧
-- **React 18** - 現代化前端框架
-- **React Router** - 單頁應用路由
-- **React Query** - 數據獲取和緩存
-- **React Hook Form** - 表單處理
-- **Tailwind CSS** - 原子化CSS框架
-- **FontAwesome** - 圖標庫
-- **Axios** - HTTP客戶端
-- **React Hot Toast** - 通知系統
+### 🔒 安全可靠
+- **JWT 認證**: 安全的用戶認證系統
+- **密碼加密**: bcrypt 加密存儲用戶密碼
+- **權限控制**: 細粒度的用戶權限管理
+- **數據備份**: 支持數據導入導出
 
-### 後端技術棧
-- **Flask** - 輕量級Python Web框架
-- **SQLAlchemy** - ORM數據庫操作
-- **Flask-JWT-Extended** - JWT認證
-- **Flask-CORS** - 跨域支持
-- **Feedparser** - RSS解析
-- **BeautifulSoup** - HTML解析
-- **Celery** - 異步任務處理
-- **Redis** - 緩存和消息隊列
+## 🛠 技術架構
 
-## 📁 項目結構
-
+### 前端 (React)
 ```
-wiseRSS/
-├── frontend/                 # React前端應用
-│   ├── public/              # 靜態資源
-│   ├── src/
-│   │   ├── components/      # React組件
-│   │   ├── pages/          # 頁面組件
-│   │   ├── hooks/          # 自定義Hooks
-│   │   ├── services/       # API服務
-│   │   ├── styles/         # 樣式文件
-│   │   └── utils/          # 工具函數
-│   ├── package.json        # 前端依賴
-│   └── tailwind.config.js  # Tailwind配置
-│
-├── backend/                 # Flask後端應用
-│   ├── app/
-│   │   ├── models/         # 數據模型
-│   │   ├── routes/         # API路由
-│   │   ├── services/       # 業務邏輯
-│   │   └── utils/          # 工具函數
-│   ├── migrations/         # 數據庫遷移
-│   ├── requirements.txt    # Python依賴
-│   ├── config.py          # 配置文件
-│   └── run.py             # 應用入口
-│
-└── README.md              # 項目說明
+frontend/
+├── src/
+│   ├── components/     # React 組件
+│   ├── pages/         # 頁面組件
+│   ├── services/      # API 服務層
+│   ├── contexts/      # React Context
+│   ├── hooks/         # 自定義 Hooks
+│   └── utils/         # 工具函數
+├── public/           # 靜態資源
+└── package.json      # 依賴配置
 ```
 
-## 🛠️ 安裝和部署
+**核心技術棧:**
+- **React 18**: 前端框架
+- **React Router 6**: 路由管理
+- **React Query**: 數據獲取和緩存
+- **React Hook Form**: 表單管理
+- **Tailwind CSS**: 原子化 CSS 框架
+- **Axios**: HTTP 客戶端
+
+### 後端 (Flask)
+```
+backend/
+├── app/
+│   ├── models/        # 數據模型
+│   ├── views/         # API 路由
+│   ├── services/      # 業務邏輯
+│   └── utils/         # 工具函數
+├── config/           # 配置文件
+├── migrations/       # 數據庫遷移
+└── requirements.txt  # 依賴配置
+```
+
+**核心技術棧:**
+- **Flask**: Python Web 框架
+- **SQLAlchemy**: ORM 數據庫操作
+- **Flask-JWT-Extended**: JWT 認證
+- **MySQL**: 主數據庫
+- **Redis**: 緩存和任務隊列
+- **Celery**: 異步任務處理
+- **Feedparser**: RSS 解析
+- **BeautifulSoup**: HTML 解析
+
+## 📊 數據庫設計
+
+### 用戶表 (users)
+| 字段 | 類型 | 說明 |
+|------|------|------|
+| id | Integer | 主鍵 |
+| username | String(80) | 用戶名 |
+| email | String(120) | 郵箱 |
+| password_hash | String(128) | 密碼哈希 |
+| preferences | JSON | 用戶偏好設置 |
+| created_at | DateTime | 創建時間 |
+
+### RSS源表 (feeds)
+| 字段 | 類型 | 說明 |
+|------|------|------|
+| id | Integer | 主鍵 |
+| user_id | Integer | 用戶ID (外鍵) |
+| title | String(200) | Feed 標題 |
+| url | String(500) | RSS URL |
+| category | String(100) | 分類 |
+| tags | Text | 標籤 (JSON) |
+| is_active | Boolean | 是否啟用 |
+| last_fetched | DateTime | 最後更新時間 |
+
+### 文章表 (articles)
+| 字段 | 類型 | 說明 |
+|------|------|------|
+| id | Integer | 主鍵 |
+| feed_id | Integer | Feed ID (外鍵) |
+| title | String(500) | 文章標題 |
+| content | Text | 文章內容 |
+| url | String(1000) | 原文連結 |
+| published_at | DateTime | 發布時間 |
+
+### 用戶文章關聯表 (user_articles)
+| 字段 | 類型 | 說明 |
+|------|------|------|
+| id | Integer | 主鍵 |
+| user_id | Integer | 用戶ID (外鍵) |
+| article_id | Integer | 文章ID (外鍵) |
+| is_read | Boolean | 是否已讀 |
+| is_bookmarked | Boolean | 是否收藏 |
+| reading_status | String(20) | 閱讀狀態 |
+| notes | Text | 用戶筆記 |
+| highlights | Text | 重點標記 (JSON) |
+
+## 🚀 快速開始
 
 ### 環境要求
-- **Node.js** 16+ 和 npm
-- **Python** 3.8+
-- **Redis** (可選，用於Celery)
-- **PostgreSQL/MySQL** (可選，默認使用SQLite)
+- Node.js 16+
+- Python 3.8+
+- MySQL 8.0+
+- Redis 6.0+
 
-### 快速開始
+### 安裝步驟
 
 #### 1. 克隆項目
 ```bash
-git clone <repository-url>
+git clone https://github.com/your-username/wiseRSS.git
 cd wiseRSS
 ```
 
-#### 2. 後端設置
+#### 2. 設置後端
 ```bash
+# 進入後端目錄
 cd backend
 
 # 創建虛擬環境
 python3 -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # Linux/Mac
+# 或 venv\Scripts\activate  # Windows
 
 # 安裝依賴
 pip install -r requirements.txt
 
-# 配置環境變量
+# 配置環境變數
 cp .env.example .env
-# 編輯 .env 文件，設置必要的配置
+# 編輯 .env 文件，設置數據庫連接信息
+
+# 創建數據庫
+mysql -u root -p -e "CREATE DATABASE wiserss CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
 # 初始化數據庫
-python3 run.py init-db
+python run.py init-db
 
 # 創建管理員用戶
-python3 run.py create-admin
+python run.py create-admin
+
+# 創建演示數據 (可選)
+python run.py create-demo-data
 
 # 啟動後端服務
-python3 run.py
+python run.py
 ```
 
-#### 3. 前端設置
+#### 3. 設置前端
 ```bash
+# 打開新終端，進入前端目錄
 cd frontend
 
 # 安裝依賴
 npm install
 
-# 啟動開發服務器
+# 配置 Tailwind CSS
+npx tailwindcss init -p
+
+# 啟動前端服務
 npm start
 ```
 
 #### 4. 訪問應用
-- 前端：http://localhost:3000
-- 後端API：http://localhost:5000
+- 前端: http://localhost:3000
+- 後端 API: http://localhost:5000/api
 
-## 📖 API文檔
+### 默認賬戶
+- 管理員: `admin` / `admin123`
+- 演示用戶: `demo` / `demo123`
 
-### 認證接口
-- `POST /api/auth/register` - 用戶註冊
-- `POST /api/auth/login` - 用戶登入
-- `GET /api/auth/me` - 獲取當前用戶信息
-- `PUT /api/auth/profile` - 更新用戶資料
+## 📋 API 文檔
 
-### RSS源管理
-- `GET /api/feeds` - 獲取RSS源列表
-- `POST /api/feeds` - 添加新RSS源
-- `PUT /api/feeds/{id}` - 更新RSS源
-- `DELETE /api/feeds/{id}` - 刪除RSS源
-- `POST /api/feeds/{id}/refresh` - 手動更新RSS源
+### 認證相關
+```
+POST /api/auth/login          # 用戶登入
+POST /api/auth/register       # 用戶註冊
+GET  /api/auth/verify         # 驗證 Token
+POST /api/auth/refresh        # 刷新 Token
+POST /api/auth/logout         # 用戶登出
+```
+
+### Feed 管理
+```
+GET    /api/feeds             # 獲取 Feed 列表
+POST   /api/feeds             # 新增 Feed
+GET    /api/feeds/{id}        # 獲取單個 Feed
+PUT    /api/feeds/{id}        # 更新 Feed
+DELETE /api/feeds/{id}        # 刪除 Feed
+POST   /api/feeds/{id}/refresh # 刷新 Feed
+GET    /api/feeds/stats       # 獲取統計信息
+```
 
 ### 文章管理
-- `GET /api/articles` - 獲取文章列表
-- `GET /api/articles/{id}` - 獲取單篇文章
-- `PUT /api/articles/{id}/read` - 標記為已讀
-- `POST /api/articles/{id}/favorite` - 添加到收藏
-- `GET /api/articles/search` - 搜索文章
+```
+GET  /api/articles            # 獲取文章列表
+GET  /api/articles/{id}       # 獲取單個文章
+PUT  /api/articles/{id}/read  # 標記為已讀
+PUT  /api/articles/{id}/bookmark # 切換收藏狀態
+GET  /api/articles/search     # 搜索文章
+POST /api/articles/{id}/notes # 添加筆記
+```
+
+## 🔧 配置說明
+
+### 環境變數配置 (.env)
+```bash
+# Flask 配置
+FLASK_ENV=development
+SECRET_KEY=your-secret-key
+JWT_SECRET_KEY=your-jwt-secret-key
+
+# 數據庫配置
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=cabie
+MYSQL_PASSWORD=Aa-12345
+MYSQL_DATABASE=wiserss
+
+# Redis 配置
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+
+# RSS 配置
+RSS_UPDATE_INTERVAL=3600  # 更新間隔 (秒)
+RSS_REQUEST_TIMEOUT=30    # 請求超時 (秒)
+
+# CORS 配置
+CORS_ORIGINS=http://localhost:3000
+```
+
+### 數據庫配置
+確保 MySQL 服務正在運行，並創建了對應的數據庫：
+```sql
+CREATE DATABASE wiserss CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'cabie'@'localhost' IDENTIFIED BY 'Aa-12345';
+GRANT ALL PRIVILEGES ON wiserss.* TO 'cabie'@'localhost';
+FLUSH PRIVILEGES;
+```
 
 ## 🎨 UI設計說明
 
