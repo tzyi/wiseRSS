@@ -4,5 +4,6 @@
 /frontend/package-lock.json
 
 /backend/__pycache__
+/backend/*/__pycache__
 /backend/migrations
 /backend/venv
